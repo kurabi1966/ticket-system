@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import {getSupabaseBrowserClient} from "@supabase-utils/browserClient"
+import { usePathname } from "next/navigation";
+import {getSupabaseBrowserClient} from "@supabase-utils/browserClient";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 export default function Nav() {
-    const router = useRouter();
     const handleLogout = async () => {
         await supabase.auth.signOut();
         router.push("/"); // redirect after logout
@@ -12,6 +13,20 @@ export default function Nav() {
     const pathname = usePathname();
     const activeProps = { className: "contrast" };
     const inactiveProps = { className: "secondary outline" };
+
+    const router = useRouter();
+    useEffect(() => {
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === "SIGNED_OUT") {
+                router.push("/");
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
     return (
         <nav>
             <ul>
@@ -28,9 +43,18 @@ export default function Nav() {
             </ul>
             <ul>
                 <li>
-                    <button className="secondary" onClick={handleLogout}>
+                    <Link
+                        role="button"
+                        href="/logout"
+                        prefetch={false}
+                        className="secondary"
+                        onClick={(event) => {
+                            event.preventDefault();
+                            supabase.auth.signOut();
+                        }}
+                    >
                         Log out
-                    </button>
+                    </Link>
                 </li>
             </ul>
         </nav>

@@ -26,8 +26,8 @@ export const Login = ({ isPasswordLogin }) => {
                         if (error) {
                             alert(error.message);
                         } else {
-                            alert("User logged in successfully");
-                            console.log("User data:", data);
+                            // alert("User logged in successfully");
+                            // console.log("User data:", data);
                             // Redirect or perform any other action after successful login
                             // For example, you can redirect to a dashboard page
                             window.location.href = "/tickets";
