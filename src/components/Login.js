@@ -25,7 +25,7 @@ const router = useRouter();
 
         return () => subscription.unsubscribe();
     }, []);
-
+    
     return (
     <form action={isPasswordLogin ? "/auth/pw-login" : "/auth/magic-link"} method="post"
         onSubmit={(event) => {
@@ -95,6 +95,13 @@ const router = useRouter();
             Sign in with
             {isPasswordLogin ? " Password" : " Magic Link"}
         </button>
+        <p>
+            Don't have an account?{" "}
+            <Link href="/auth/signup">Sign up</Link>
+        </p>
+        <p>
+            <Link href="/auth/forget-password">Forgot Password?</Link>
+        </p>
         </article>
     </form>
     );

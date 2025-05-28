@@ -10,6 +10,11 @@ export default function ErrorPage({ searchParams }) {
             Could not send a magic link. Maybe you had a typo in your E-Mail?
             </strong>
         )}
+        {type === "password-recovery" && (
+            <strong>
+            Something went wrong while trying to recover your password. Please contact the support?
+            </strong>
+        )}
         {type === "invalid_magiclink" && (
             <strong>
             Incorrect magic link. Maybe you already used it or it expired?
