@@ -11,10 +11,11 @@ export const Login = ({ isPasswordLogin }) => {
 
     const supabase = getSupabaseBrowserClient();
     return (
-    <form
+    <form action="/auth/pw-login" method="POST"
         onSubmit={(event) => {
             event.preventDefault();
             if (isPasswordLogin) {
+                console.log("Frontend: User wants to login with password");
                 const email = emailInputRef.current.value;
                 const password = passwordInputRef.current.value;
                 supabase.auth

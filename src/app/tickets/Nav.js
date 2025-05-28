@@ -3,8 +3,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {getSupabaseBrowserClient} from "@supabase-utils/browserClient";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 export default function Nav() {
+    const [userEmail, setUserEmail] = useState("");
+
     const handleLogout = async () => {
         await supabase.auth.signOut();
         router.push("/"); // redirect after logout
@@ -16,6 +18,14 @@ export default function Nav() {
 
     const router = useRouter();
     useEffect(() => {
+        const getUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                setUserEmail(user.email);
+            }
+        };
+        getUser();
+
         const {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((event, session) => {
@@ -43,6 +53,8 @@ export default function Nav() {
             </ul>
             <ul>
                 <li>
+                    <div className="nav-user-info">
+                    {userEmail && <span className="text-sm">Signed in as: {userEmail}</span>}
                     <Link
                         role="button"
                         href="/logout"
@@ -55,6 +67,7 @@ export default function Nav() {
                     >
                         Log out
                     </Link>
+                    </div>
                 </li>
             </ul>
         </nav>
