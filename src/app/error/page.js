@@ -5,6 +5,16 @@ export default function ErrorPage({ searchParams }) {
     return (
     <div style={{ textAlign: "center" }}>
         <h1>Ooops!</h1>
+        {type === "magiclink" && (
+            <strong>
+            Could not send a magic link. Maybe you had a typo in your E-Mail?
+            </strong>
+        )}
+        {type === "invalid_magiclink" && (
+            <strong>
+            Incorrect magic link. Maybe you already used it or it expired?
+            </strong>
+        )}
         {type === "login-failed" && (
         <strong>Login was not successfull, sorry.</strong>
         )}

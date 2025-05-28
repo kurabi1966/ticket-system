@@ -3,6 +3,8 @@
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 import Link from "next/link";
 import { useRef } from "react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export const Login = ({ isPasswordLogin }) => {
 
@@ -10,12 +12,25 @@ export const Login = ({ isPasswordLogin }) => {
     const passwordInputRef = useRef(null);
 
     const supabase = getSupabaseBrowserClient();
+
+const router = useRouter();
+    useEffect(() => {
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === "SIGNED_IN") {
+                router.push("/tickets");
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
     return (
-    <form action="/auth/pw-login" method="POST"
+    <form action={isPasswordLogin ? "/auth/pw-login" : "/auth/magic-link"} method="post"
         onSubmit={(event) => {
-            event.preventDefault();
+            isPasswordLogin && event.preventDefault();
             if (isPasswordLogin) {
-                console.log("Frontend: User wants to login with password");
                 const email = emailInputRef.current.value;
                 const password = passwordInputRef.current.value;
                 supabase.auth
@@ -26,18 +41,8 @@ export const Login = ({ isPasswordLogin }) => {
                     .then(({ data, error }) => {
                         if (error) {
                             alert(error.message);
-                        } else {
-                            // alert("User logged in successfully");
-                            // console.log("User data:", data);
-                            // Redirect or perform any other action after successful login
-                            // For example, you can redirect to a dashboard page
-                            window.location.href = "/tickets";
-                            // const router = useRouter();
-                            // router.push("/tickets");
                         }
                     });
-            } else {
-            alert("User wants to login with magic link");
             }
         }}
     >
