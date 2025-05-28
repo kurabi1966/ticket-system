@@ -1,27 +1,31 @@
 // This middleware is used to check the session on every request
 import { getSupabaseReqResClient } from "@/supabase-utils/reqResClient";
 import { NextResponse } from "next/server";
-import { use } from "react";
 export async function middleware(request) {
-
+  console.log("Middleware running for request:", request.nextUrl.pathname);
 
     const { supabase, response } = getSupabaseReqResClient({ request });
 
-    // const session = await supabase.auth.getSession();
+  
 
     const requestedPath = request.nextUrl.pathname;
-    const user = supabase.auth.getUser();
+    const {data} = await supabase.auth.getUser();
+
+    const user = data.user;
+    console.log("Authenticated User?", user ? user.email : "No user");
     if (requestedPath.startsWith("/tickets")) {
       if (!user) {
-        return NextResponse.redirect(new URL("/", req.url));
+        return NextResponse.redirect(new URL("/", request.url));
       }
     } else if(requestedPath === "/"){
       if (user) {
         return NextResponse.redirect(new URL("/tickets", request.url));
       }
     }
+    
     return response.value;
 }
+
 export const config = {
   matcher: [
     /**

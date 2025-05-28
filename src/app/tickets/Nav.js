@@ -1,8 +1,14 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-
+import { usePathname, useRouter } from "next/navigation";
+import {getSupabaseBrowserClient} from "@supabase-utils/browserClient"
 export default function Nav() {
+    const router = useRouter();
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        router.push("/"); // redirect after logout
+    };
+    const supabase = getSupabaseBrowserClient();
     const pathname = usePathname();
     const activeProps = { className: "contrast" };
     const inactiveProps = { className: "secondary outline" };
@@ -22,12 +28,9 @@ export default function Nav() {
             </ul>
             <ul>
                 <li>
-                    <Link
-                        role="button"
-                        href="/logout"
-                        className="secondary">
+                    <button className="secondary" onClick={handleLogout}>
                         Log out
-                    </Link>
+                    </button>
                 </li>
             </ul>
         </nav>
