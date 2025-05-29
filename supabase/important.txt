@@ -1,0 +1,5 @@
+To dump the local data to a seed.sql:
+npx supabase db dump --local --data-only --file=supabase/seed.sql
+
+To backup the database schema:
+npx supabase db diff --local -f my_initial_structure
