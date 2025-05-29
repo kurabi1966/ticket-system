@@ -2,24 +2,30 @@
 import { getSupabaseReqResClient } from "@/supabase-utils/reqResClient";
 import { NextResponse } from "next/server";
 export async function middleware(request) {
-  console.log("Middleware running for request:", request.nextUrl.pathname);
+    console.log("--- Middleware running for request:", request.nextUrl.pathname);
 
     const { supabase, response } = getSupabaseReqResClient({ request });
 
-  
+    const {data} = await supabase.auth.getUser();
+    const user = data.user;
 
     const requestedPath = request.nextUrl.pathname;
-    const {data} = await supabase.auth.getUser();
 
-    const user = data.user;
-    console.log("Authenticated User?", user ? user.email : "No user");
-    if (requestedPath.startsWith("/tickets")) {
+    const [tenant, ...restOfPath] = requestedPath.substr(1).split("/");
+    console.log("---+++Tenant:", tenant);
+    if ( !/[a-z0-9-_]+/.test(tenant) ) {
+      return NextResponse.rewrite(new URL("/not-found", req.url));
+    }
+
+    const applicationPath = "/" + restOfPath.join("/");
+    console.log("---+++Application Path:", applicationPath);
+    if (applicationPath.startsWith("/tickets")) {
       if (!user) {
-        return NextResponse.redirect(new URL("/", request.url));
+        return NextResponse.redirect(new URL(`/${tenant}/`, request.url));
       }
-    } else if(requestedPath === "/"){
+    } else if(applicationPath === "/"){
       if (user) {
-        return NextResponse.redirect(new URL("/tickets", request.url));
+        return NextResponse.redirect(new URL(`/${tenant}/tickets`, request.url));
       }
     }
     
